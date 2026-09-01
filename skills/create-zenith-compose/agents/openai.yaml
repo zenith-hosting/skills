@@ -1,4 +1,4 @@
 interface:
   display_name: "Create Zenith Compose"
-  short_description: "Create a deployable Zenith compose file"
-  default_prompt: "Use $create-zenith-compose to add a valid zenith-compose.yml to this repository."
+  short_description: "Open the PRs needed to publish on Zenith"
+  default_prompt: "Use $create-zenith-compose to prepare this public GitHub repository for Zenith and open the required pull requests."
