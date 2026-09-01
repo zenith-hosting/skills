@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Zenith Compose"
+  short_description: "Create a deployable Zenith compose file"
+  default_prompt: "Use $create-zenith-compose to add a valid zenith-compose.yml to this repository."
