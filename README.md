@@ -26,7 +26,7 @@ npx skills add zenith-hosting/skills --skill create-zenith-compose --agent codex
 
 ### `create-zenith-compose`
 
-Inspects an application repository and creates the root `zenith-compose.yml` Zenith needs for review. It can adapt an existing Compose stack or work from container documentation, Dockerfiles, release workflows, and startup code. If the project has no public image, it guides the owner through publishing one with GHCR first.
+Prepares a public GitHub repository for Zenith with two small PRs. If the app has no public image, the skill containerizes it and opens a GHCR publishing PR. After that merges, it verifies the image, creates `zenith-compose.yml`, and opens the second PR. The owner only merges the PRs and makes a new GHCR package public when GitHub requires it.
 
 Update an installed copy with:
 

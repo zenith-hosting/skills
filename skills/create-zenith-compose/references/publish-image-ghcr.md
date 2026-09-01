@@ -1,37 +1,27 @@
 # Publish an image with GHCR
 
-Use this path when the repository has no public image Zenith can pull. GHCR is the default because the source and package stay under the same GitHub owner.
-
-This is a separate repository change. Explain it before creating a Dockerfile or workflow. A request to create only `zenith-compose.yml` does not authorize extra CI files.
+Use this phase when Zenith cannot anonymously pull a maintained image for the app. GHCR keeps the image under the same GitHub owner as the source.
 
 ## Establish the image build
 
-Inspect the app's build and runtime before editing anything. Reuse a working Dockerfile when one exists. If none exists and the owner asks for image publishing setup, create the smallest production Dockerfile supported by the repository's build scripts and runtime documentation.
+Reuse a working production Dockerfile when one exists. Otherwise create the smallest one supported by the repository's build scripts and runtime behavior.
 
-The Dockerfile must:
+The image must:
 
-- build without credentials copied into an image layer;
-- start the production application through its real entrypoint or command;
+- build without copying credentials into a layer;
+- start the real production process;
 - listen on `0.0.0.0`, not only `localhost`;
-- document the app's internal HTTP port with `EXPOSE` when known;
-- retain every runtime file the process needs;
-- write durable state only to paths that can become Compose volumes.
+- retain every file needed at runtime;
+- keep durable state in paths that Compose can mount as volumes;
+- declare the internal HTTP port with `EXPOSE` when known.
 
-Add `.dockerignore` only when repository files would leak secrets, bloat the context, or invalidate caching. Derive its entries from the repository. Do not paste a generic ignore file that removes build inputs.
+Add `.dockerignore` only when repository files would expose secrets, bloat the build context, or break caching. Derive it from this repository. Do not paste a generic ignore file that removes build inputs.
 
-Build the image locally when Docker is available:
-
-```sh
-docker build -t zenith-local-check .
-```
-
-Run the image far enough to prove the entrypoint starts and the expected port listens. Supply only documented test values. Do not treat a successful build as proof that the app boots.
+When Docker is available, build the image and start it with documented test values. A successful build is not enough. Confirm the entrypoint starts and the expected port listens when the app can run without external production credentials.
 
 ## Add the publishing workflow
 
-Detect the repository's default branch instead of assuming `main`. Adapt the Dockerfile path and build context when the app lives in a subdirectory.
-
-Create `.github/workflows/publish-container.yml` when the owner authorizes it:
+Detect the default branch and adapt the context and Dockerfile path for a monorepo. Add `.github/workflows/publish-container.yml`:
 
 ```yaml
 name: Publish container image
@@ -84,24 +74,25 @@ jobs:
           cache-to: type=gha,mode=max
 ```
 
-Replace `DEFAULT_BRANCH` with the detected branch. Keep the job permissions narrow. `GITHUB_TOKEN` supplies the GHCR login, so this workflow needs no personal access token for a package owned by the same user or organization.
+Replace `DEFAULT_BRANCH`. Follow a repository's action-pinning policy when it has one. Keep permissions narrow. Do not add extra architectures unless the app and every base image support them. Zenith needs `linux/amd64`.
 
-Use current stable major versions if these action versions have moved. GitHub recommends pinning third-party actions to commit SHAs for stronger supply-chain control. Follow an existing repository policy when it already pins actions.
+The metadata action adds the source label that links the package to the repository. `GITHUB_TOKEN` is enough for a package owned by the same user or organization, so do not introduce a personal access token unless repository policy requires one.
 
-The metadata labels link the package to its source repository. Do not add `linux/arm64` or other platforms unless the app and its base images support them. A normal GitHub-hosted build produces the `linux/amd64` image Zenith needs.
+Commit this work and open the containerization PR through [github-pr-workflow.md](github-pr-workflow.md).
 
-## First publish
+## After the owner merges
 
-Tell the owner to commit the Dockerfile, workflow, and any intentional `.dockerignore` change to the public repository's default branch, then push. The default-branch push starts the workflow. They can also run **Publish container image** from the repository's Actions tab after the workflow exists on the default branch.
+Watch the default-branch **Publish container image** run with `gh run list` and `gh run watch`. If it fails, inspect the logs first. Open a focused follow-up PR only for a repository code or workflow fix. For an Actions permission, organization policy, or package access failure, give the owner the single setting change required instead of opening a PR that cannot fix it.
 
-Have them wait for the workflow to finish and open the package under the GitHub user or organization profile's **Packages** tab.
+Test the image without local GHCR credentials. A fresh temporary `DOCKER_CONFIG` with `docker manifest inspect` or `docker buildx imagetools inspect` is sufficient. Resolve the digest for use in `zenith-compose.yml` when possible.
 
-New personal GHCR packages start private. Zenith must pull without GitHub credentials, so the owner must open **Package settings**, choose **Change visibility**, and set the package to **Public**. Warn them that GitHub says a public package cannot be made private again.
+New GHCR packages may be private. If the anonymous check fails for that reason, GitHub provides no REST endpoint to change visibility. Use `gh api users/OWNER --jq .type` to determine the owner type, then give the owner the matching URL:
 
-For an organization package, the owner may need organization permission to change package visibility. If the workflow cannot push, check the package's **Manage Actions access** and the organization's package inheritance policy before introducing a PAT.
+```text
+organization: https://github.com/orgs/OWNER/packages/container/REPOSITORY/settings
+personal:     https://github.com/users/OWNER/packages/container/REPOSITORY/settings
+```
 
-## Verify and continue
+Ask them to choose **Change visibility** and **Public**. Tell them GitHub does not allow a public package to become private again. For organization packages, they need package admin permission.
 
-Confirm the image exists at `ghcr.io/<owner>/<repository>:<tag>` and can be pulled anonymously. Use a release tag when the project has one. Otherwise use the generated `sha-<short-sha>` tag for the first Zenith proposal. Do not pin the compose file to `latest` when an immutable tag or digest is available.
-
-After the anonymous pull works, return to the main skill. Create `zenith-compose.yml` with that image, validate it, and finish with the normal default-branch and Zenith submission steps.
+Once an anonymous pull works, continue to the compose phase. Prefer the resolved digest. Otherwise use the generated `sha-<short-sha>` tag. Do not use `latest` when an immutable reference is available.
