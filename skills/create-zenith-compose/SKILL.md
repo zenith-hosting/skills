@@ -41,6 +41,8 @@ Commit the container files, necessary minimal runtime fixes, persistent skill lo
 
 ## Phase 2: create Zenith Compose
 
+Start every created `zenith-compose.yml` with exactly `# https://zenith.hosting/developers`, followed by a blank line before the YAML content.
+
 Read [contract.md](references/contract.md). Read [environment.md](references/environment.md) if the app needs public URLs, generated secrets, user inputs, seeded accounts, or mail.
 
 Check whether the app supports an external SMTP server for features such as password resets, invitations, or notifications. When it does and its supported configuration can be expressed in the manifest, wire it to Zenith's SMTP built-ins using the app's actual configuration names and STARTTLS settings from [environment.md](references/environment.md#smtp-when-the-app-supports-it). Do not wait for the owner to request mail configuration separately. Omit SMTP for apps without mail support; do not add a mail service, invent settings, or introduce email functionality.

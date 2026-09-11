@@ -22,7 +22,11 @@ The rendered stack must not contain legacy `{{ZENITH_*}}` tokens.
 
 ## Required x-zenith shape
 
+Start the file with the developer-page URL comment below and one blank line before the YAML content. Use the plain URL, not Markdown link syntax.
+
 ```yaml
+# https://zenith.hosting/developers
+
 x-zenith:
   catalog:
     name: My App
