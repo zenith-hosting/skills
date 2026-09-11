@@ -50,11 +50,11 @@ Zenith runs one container per Compose service. It uses `image`, `entrypoint`, `c
 
 All services share private in-deployment networking and resolve each other by service name. A sibling does not need a published host port to be reachable. Keep a service's `ports` entry only when the app or a health-gated dependency needs that declared port. The `x-zenith.expose` port is added to the public app service automatically.
 
-Each service needs a registry image that the Zenith cluster can pull without repository-local build context. Prefer an immutable digest or a release tag. Avoid `latest` when a current release tag is known.
+Each service needs a registry image that the Zenith cluster can pull without repository-local build context. Zenith accepts image tags, but this skill produces anonymously verified immutable digests so the proposed release is reproducible. Require `linux/amd64` for production; preserve the index digest when the image includes multiple platforms.
 
 ## Persistence
 
-Use top-level named Compose volumes for state:
+Use top-level named Compose volumes for state. The example image below is illustrative; replace it with the verified image digest:
 
 ```yaml
 x-zenith:
@@ -71,7 +71,7 @@ x-zenith:
 
 services:
   app:
-    image: ghcr.io/example/my-app:1.2.3
+    image: ghcr.io/example/my-app@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
     volumes:
       - app-data:/var/lib/my-app
 

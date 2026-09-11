@@ -1,63 +1,55 @@
 ---
 name: create-zenith-compose
-description: Prepare a public GitHub repository for publishing on Zenith. Containerize the app when needed, publish it through GHCR, create zenith-compose.yml, and open the required pull requests with GitHub CLI.
+description: Prepare or maintain a public GitHub repository for Zenith. Publish an AMD64 container, create or update zenith-compose.yml, retain a repository-local skill pointer, and prepare reviewed image updates. Use for deployment-affecting changes as well as initial onboarding.
 ---
 
-# Create Zenith Compose
+# Create and maintain Zenith Compose
 
-Prepare the current public GitHub repository for Zenith. Work in two resumable phases:
+Prepare the current public GitHub repository for Zenith, or bring its existing deployment files up to date. Production runs `linux/amd64`. Local ARM clusters are a separate development concern; do not require developers to publish ARM images.
 
-1. Make a public container image available and open the containerization PR when the repository needs one.
-2. Create `/zenith-compose.yml` and open a second PR.
+For first publication, use two resumable phases: publish a pullable container image, then add the pinned `zenith-compose.yml`. The repository owner merges the PRs. Never merge, push to the default branch, change package visibility, or submit/publish the app on Zenith for them.
 
-The repository owner merges each PR. Never merge a PR, push to the default branch, change package visibility, or submit the app to Zenith for them.
+## Establish access and resume
 
-## Run autonomously
+Invoking this skill authorizes the reversible repository work needed for the requested PRs: edit owned files, create branches, commit those files, push, and create or update PRs. Routine repository choices do not need another approval. Later automatic discovery of this skill during unrelated work does not authorize publishing images or opening PRs.
 
-Use repository evidence instead of asking the owner routine implementation questions. Invoking this skill authorizes the normal reversible repository work needed for these PRs: editing owned files, creating a branch, committing only those files, pushing the branch, and opening or updating its PR.
+Read [github-pr-workflow.md](references/github-pr-workflow.md) first. Use an available authenticated GitHub connector/API or CLI plus Git transport; `gh` is convenient, not required. Local Docker is optional. Discover repository visibility, default branch, dirty files, existing PRs, and usable workflow-write permissions before editing. Do not install Docker or request broader credentials when existing tools suffice.
 
-Stop only when credentials or permissions are missing, required runtime behavior cannot be established from the repository, or an irreversible owner action is required. Do not stop merely to show a draft or ask permission for an ordinary PR change.
+Inspect the remote default branch and registry, not just the current checkout. Resume the matching PR or failed workflow rather than duplicating it:
 
-Use `gh repo view` to find the GitHub repository, visibility, and default branch. Stop before editing if the repository is private because Zenith must read the default branch and pull its image without repository credentials. Check `gh auth status`, the worktree, existing Zenith branches, and open or merged PRs before editing. Resume existing work instead of creating duplicate PRs. Keep unrelated changes out of commits. Read [references/github-pr-workflow.md](references/github-pr-workflow.md) before creating either PR.
+- An open container PR needs its merge before a default-branch image can exist. Give that one owner action. If the owner merges while the session continues, inspect the resulting CI run and proceed without asking for a new invocation.
+- After successful publication, verify anonymous manifest/config access and production architecture with [scripts/check-image.py](scripts/check-image.py). CI must also pull and boot the published image without registry credentials. Manifest inspection alone does not prove a complete pull or runtime behavior.
+- Only diagnose private package visibility from evidence after the package exists. Never preemptively say it is probably private or send guessed settings URLs. Follow [publish-image-ghcr.md](references/publish-image-ghcr.md) for actual access failures.
+- An open compose/update PR needs its merge. After merge, check the default-branch files and required CI results, then direct the owner back to Zenith's **Publish an app** page.
+- An existing `zenith-compose.yml` selects **maintenance mode**, not automatic success. Audit its pinned image and runtime contract using [maintenance.md](references/maintenance.md).
 
-## Determine the current phase
+Stop at a concrete missing credential, unestablished runtime requirement, or owner-only action. Report the existing PR/run link, what passed, and the single next action. Do not describe a prepared repository as published on Zenith.
 
-Inspect the default branch and registry state, not just the current checkout.
+## Keep the skill in the repository
 
-- If a suitable public image already exists, skip containerization.
-- If a containerization PR is open, report its URL and the single next owner action. Do not create `zenith-compose.yml` from an image that Zenith cannot pull yet.
-- If the containerization PR has merged, wait for its publish workflow to finish, then test an anonymous pull. Continue directly to the compose phase when it works.
-- If anonymous pull fails only because the new GHCR package is private, give the exact package settings URL and ask the owner to make it public. This is irreversible on GitHub and cannot be done through the package REST API.
-- If the compose PR is open, report its URL and ask the owner to merge it.
-- If `zenith-compose.yml` is already on the default branch, report that the repository is ready for Zenith. Tell the owner to return to Zenith's **Publish an app** page, select the repository again, and submit it for review.
+Read [maintenance.md](references/maintenance.md) and commit the small loader from [assets/project-skill.md](assets/project-skill.md) into the project, together with agent-discovery pointers and a brief deployment document. Do this in the first applicable PR, including when containerization is unnecessary. This is part of the requested onboarding, not uncommitted installation debris for the owner to clean up.
+
+The loader reads the current skill and referenced specification from `zenith-hosting/skills` when relevant work starts. It does not claim agents self-update continuously. Preserve the project's existing instructions and unrelated skills.
 
 ## Phase 1: publish a container image
 
-An existing Compose file is useful, not required. Find the app's real production build and runtime path from its Dockerfile, build scripts, entrypoint, startup code, deployment docs, sample environment, and release workflows.
+Read [publish-image-ghcr.md](references/publish-image-ghcr.md). Find the real production build and runtime from the Dockerfile, scripts, entrypoint, source, deployment docs, and sample configuration. Reuse a suitable anonymously pullable maintained AMD64 image if one exists.
 
-If no anonymously pullable maintained image exists, read [references/publish-image-ghcr.md](references/publish-image-ghcr.md). Create or fix the smallest production Dockerfile, a deliberate `.dockerignore` when needed, and the GHCR publishing workflow. Verify that the image builds and boots far enough to expose the expected service when local tools and documented test values allow it.
+Otherwise create the smallest working Dockerfile, a deliberate `.dockerignore` when needed, and CI to build and smoke-test PRs and publish trusted default-branch/release builds. Run checks in CI when local Docker is unavailable; never equate skipped runtime verification with a pass. Keep test secrets synthetic and PR builds unprivileged.
 
-Commit only files required by the container phase. This may include the smallest runtime or source change needed for the production process to bind correctly. Push a dedicated branch and open the first PR with `gh pr create`. End this phase with the PR URL and ask the owner to merge it. If they merge it during the same session, continue from the default branch without asking them to invoke the skill again.
+Commit the container files, necessary minimal runtime fixes, persistent skill loader, and deployment guidance. Open or update the container PR. After its merge, monitor publication and anonymous pull/boot checks, resolve the top-level digest, and continue to phase 2.
 
 ## Phase 2: create Zenith Compose
 
-Read [references/contract.md](references/contract.md) before writing the file. If the app needs a public URL, generated secret, owner-supplied value, seeded account, or outbound mail, also read [references/environment.md](references/environment.md).
+Read [contract.md](references/contract.md). Read [environment.md](references/environment.md) if the app needs public URLs, generated secrets, user inputs, seeded accounts, or mail.
 
-Build the smallest stack that preserves the app's working behavior:
+- Every service needs a pullable image; Zenith does not build `build:` entries. Pin immutable digests, preserving the top-level index digest for multi-platform images.
+- Preserve required databases, workers, queues, commands, health checks, and durable volumes. Remove optional development/observability helpers only when they are not required by the app.
+- Establish ports, credentials, mount paths, and runtime behavior from repository evidence. Do not invent them.
+- Replace unresolved `.env` interpolation with fixed non-secret values or `x-zenith.env`. Replace data bind mounts with declared named volumes and `x-zenith.storage`.
+- Include the truthful minimum `x-zenith`: `catalog.name` and a primary `expose` entry using the internal HTTP port. Zenith owns the public host and TLS.
+- Do not add operator-only `internal.yml`, pricing, resource limits, catalogue IDs, or reviewer metadata.
 
-- Every service must use an image. Zenith does not build `build:` entries.
-- Prefer an image maintained by this repository or its project. Pin an immutable digest when it can be resolved.
-- Keep required databases, queues, workers, health checks, commands, and named data volumes.
-- Remove optional observability, development tools, reverse proxies, and local-only helpers unless the app cannot run without them.
-- Establish credentials, ports, mount paths, commands, and services from repository evidence. Never invent them.
-- Replace `.env` interpolation with fixed non-secret values or `x-zenith.env` declarations.
-- Replace bind-mounted data directories with named volumes and declare user data through `x-zenith.storage`.
-- Add the smallest truthful `x-zenith` block. `catalog.name` and one primary `expose` entry are required.
-- Expose the app service's internal HTTP port. Zenith owns the public host and TLS.
-- Do not add `internal.yml`, pricing, resource limits, catalogue IDs, artwork, or reviewer-only metadata.
+Change an existing manifest in place. Run Compose configuration validation in CI, or locally when available, and check the hard rules in the current contract. A Compose parse alone is not Zenith contract or boot validation.
 
-Change an existing `zenith-compose.yml` in place when one exists. Preserve settings the repository still supports.
-
-Run `docker compose -f zenith-compose.yml config` when Docker Compose is available. Then check every hard rule in [references/contract.md](references/contract.md). Re-read the result for unresolved `${...}` expressions, local paths, placeholder values, floating secrets, and services without images.
-
-Commit only the Zenith file. Push a separate branch and open the second PR with `gh pr create`. End with the PR URL and ask the owner to merge it. After the merge, confirm the file exists on the default branch and direct them back to Zenith's **Publish an app** page.
+Include the manifest, associated deployment guidance, and the tested image-update preparation described in [maintenance.md](references/maintenance.md). Open the compose PR against the latest default branch. After merge and verification, direct the owner back to Zenith for submission/review. Later image builds or GitHub merges do not automatically update the Zenith catalogue or running customer deployments.
