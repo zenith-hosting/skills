@@ -70,7 +70,21 @@ x-zenith:
     SMTP_FROM: ZENITH_SMTP_FROM
 ```
 
-Only add the SMTP mapping when repository evidence shows the app's mail variables and TLS mode. Zenith supplies credentials, but it cannot infer application-specific variable names or transport switches.
+The example variable names are illustrative. Use the exact names the app actually reads.
+
+## SMTP when the app supports it
+
+During onboarding and maintenance, inspect the app's production configuration, mailer code, and documentation for external SMTP support. If SMTP powers an existing feature such as password resets, invitations, or notifications, configure it in `zenith-compose.yml` rather than leaving the owner to discover and supply a separate mail provider.
+
+- Alias the app's host, port, authentication username/password, and sender-address settings to `ZENITH_SMTP_HOST`, `ZENITH_SMTP_PORT`, `ZENITH_SMTP_USER`, `ZENITH_SMTP_PASS`, and `ZENITH_SMTP_FROM` as shown above. Zenith supplies these values; do not ask the owner to enter them or hardcode credentials.
+- Zenith's relay uses port **587 with authenticated STARTTLS**, not implicit TLS on port 465. Set the app's documented transport, authentication, and certificate-verification options in its normal Compose `environment`. Preserve certificate verification; do not guess that a variable named `SECURE` means STARTTLS.
+- Use `ZENITH_SMTP_FROM` for the sender address. `ZENITH_SMTP_DISPLAY` may supply a supported sender-name field; it is not an email address. Do not substitute the deployment owner's email as the sender.
+- Scope aliases with `services` when only the app or a mail worker needs them, and configure every process that actually sends mail. Do not inject mail credentials into unrelated databases or caches.
+- For DSN-only mailers, alias the username and password with `transform: urlencode`, then reference those encoded declarations in a `template`. Encode each credential component, not the whole DSN. Determine the scheme and STARTTLS parameters from that mailer's documentation.
+
+If configuration is available only through an interactive admin screen or an unsupported manifest mechanism, explain that limitation instead of inventing environment variables. Apps with no outbound-mail feature need no SMTP entries or extra mail service. A commented-out or unused mail example is not evidence of active support.
+
+Validate the app's configuration and, where testable, trigger a real reset, invitation, or notification using a disposable SMTP test sink in CI. Confirm the recipient, sender, and content; a successful TCP connection alone does not prove the app sends mail. A test sink does not prove delivery through Zenith's real STARTTLS relay. Report separately what was configured, what was tested, and any live delivery verification still needed; do not require production credentials for local or CI checks.
 
 ## Generated secrets
 
