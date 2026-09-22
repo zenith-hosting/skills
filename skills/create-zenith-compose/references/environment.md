@@ -46,9 +46,11 @@ Built-ins are not injected automatically. Alias or reference only the ones the a
 | Name | Value |
 |---|---|
 | `ZENITH_PUBLIC_URL` | Verified custom-domain URL when mapped, otherwise the Zenith URL |
-| `ZENITH_PUBLIC_HOST` | Host part of the public URL |
+| `ZENITH_PUBLIC_HOST` | Authority from the public URL, including a port when present |
 | `ZENITH_PUBLIC_URLS` | Zenith URL and custom URL, comma-separated |
-| `ZENITH_PUBLIC_HOSTS` | Zenith host and custom host, comma-separated |
+| `ZENITH_PUBLIC_HOSTS` | Zenith authorities, comma-separated |
+| `ZENITH_PUBLIC_HOSTNAME` | Public hostname without a port |
+| `ZENITH_PUBLIC_HOSTNAMES` | Zenith and custom hostnames, comma-separated and without ports |
 | `ZENITH_OWNER_EMAIL` | Deployment owner's account email |
 | `ZENITH_SMTP_HOST` | Zenith SMTP host |
 | `ZENITH_SMTP_PORT` | `587` |
@@ -71,6 +73,18 @@ x-zenith:
 ```
 
 The example variable names are illustrative. Use the exact names the app actually reads.
+
+## Internal, public, build-time, and runtime URLs
+
+Classify every URL by where it is consumed before declaring it:
+
+- Container-to-container traffic uses the private Compose service name, such as `http://api:3001`. Do not expose a sibling merely to make internal traffic work.
+- Browser/client code cannot resolve Compose service names. A variable compiled into browser JavaScript—commonly one prefixed `NEXT_PUBLIC_`, `PUBLIC_`, or `VITE_`—must use the public app URL, a relative same-origin path, or another actually exposed endpoint supported by the app. Never give browser code `http://api:3001` just because the app container can resolve it.
+- Server-side canonical/trusted-origin settings normally alias `ZENITH_PUBLIC_URL` or a related built-in. An internal URL is not a valid OAuth callback or cookie origin.
+
+`x-zenith.env` values are injected when containers start. They cannot change a value already embedded during the container image build. Inspect the framework config and Dockerfile to determine whether each public variable is read at build time or runtime. For a prebuilt multi-tenant image, prefer an app-supported runtime config or same-origin relative routing. If the app only supports a deployment-specific URL at build time, that is an unresolved image/runtime requirement; do not pretend a runtime alias fixes it.
+
+For each public URL, trace one real browser request or callback end to end. A container health check against an internal URL does not prove that a user's browser can reach it.
 
 ## SMTP when the app supports it
 

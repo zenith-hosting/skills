@@ -22,7 +22,7 @@ Compare the current app's build/runtime with its Dockerfile, publishing workflow
 
 For application-only changes that need a new image, retain the current working digest until the new image is published and verified. For runtime-contract changes, prepare the matching manifest changes alongside the new digest. Work from current remote state and reuse an existing update PR.
 
-The loader improves future agent discovery; it cannot guarantee compliance. CI should build and boot the image on relevant PRs, validate Compose when present, and check the generated manifest's supported contract. Describe any semantic checks that remain manual.
+The loader improves future agent discovery; it cannot guarantee compliance. CI should build and boot the image on relevant PRs, validate Compose when present, and check the generated manifest's supported contract. Compose-only pull requests must still run manifest validation even when image-build path filters correctly avoid publication. Prefer a cheap dedicated manifest job over rebuilding the image only to keep that check alive. Describe any semantic checks that remain manual.
 
 ## Prepare image updates automatically
 
@@ -32,6 +32,6 @@ Use an existing permitted PR mechanism when available. Otherwise upload the upda
 
 Only application/build inputs trigger publication. Exclude changes confined to `zenith-compose.yml`, the skill loader, or deployment docs, unless those files are actual image build inputs. Derive the positive path filters from the Dockerfile/build context; do not ignore every YAML or Markdown file indiscriminately. For builds that legitimately embed deployment files, use a separate explicitly triggered image-release path to prevent update loops.
 
-Before generating or applying a digest update, confirm the successful build corresponds to the latest applicable source revision; superseded builds must not replace a newer proposal. Recheck before pushing, never backdate or downgrade on stale completion, and make no-op updates exit cleanly. Validate the resulting manifest and anonymous image access. A merge of the digest-only update must not publish another image. When a PR is created by automation, inspect its actual required check/approval state instead of assuming workflows ran.
+Before generating or applying a digest update, confirm the successful build corresponds to the latest applicable source revision; superseded builds must not replace a newer proposal. Recheck before pushing, never backdate or downgrade on stale completion, and make no-op updates exit cleanly. Validate the resulting manifest and anonymous image access. When several services intentionally use the same application image, update an explicit configured service set and require every old reference to match; never assume there is exactly one matching `image:` line or blindly replace all images. Include the updated service names in the artifact evidence. A merge of the digest-only update must not publish another image. When a PR is created by automation, inspect its actual required check/approval state instead of assuming workflows ran.
 
 Maintain the upstream manifest through reviewed changes. Zenith catalogue acceptance and updates to running customer deployments remain separate operations; never promise an automatic production rollout from this workflow.
