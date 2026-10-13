@@ -11,11 +11,11 @@ Inspect the app's build scripts, entrypoint, HTTP port, dependencies, health che
 
 Use the bundled contract files as the specification. Read the definitions relevant to the manifest before editing it:
 
-- [zenith-compose.schema.json](references/zenith-compose.schema.json) defines the public Compose document and `x-zenith` fields. Start with `$defs.xZenith`, `catalog`, `expose`, and the service definitions.
+- [zenith-compose.schema.json](references/zenith-compose.schema.json) defines the developer Compose document and `x-zenith` fields. Start with `$defs.xZenith`, `catalog`, `expose`, and the service definitions.
 - [zenith-dev-compose.schema.json](references/zenith-dev-compose.schema.json) adds preview restrictions. Apply it together with the public schema. It does not replace the public schema.
 - [dev-env-policy.json](references/dev-env-policy.json) defines permitted local environment names and reserved built-ins.
 
-The contract files come from Zenith's `contract` folder. Their source commit and file hashes are recorded in [contract-source.json](references/contract-source.json). Do not invent `x-zenith` fields or infer runtime support from generic Docker Compose alone. A schema pass does not cover every semantic restriction. Run `zenith check` for the installed CLI's preview checks and act on its errors.
+The contract files come from Zenith's `contract` folder. The Compose schema is filtered to developer-facing Zenith fields. Their source commit and source/distribution hashes are recorded in [contract-source.json](references/contract-source.json). Do not invent `x-zenith` fields or infer runtime support from generic Docker Compose alone. A schema pass does not cover every semantic restriction. Run `zenith check` for the installed CLI's preview checks and act on its errors.
 
 ## Prepare a preview
 

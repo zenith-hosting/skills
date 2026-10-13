@@ -2751,24 +2751,6 @@
         }
       ]
     },
-    "screenshot": {
-      "type": "object",
-      "required": [
-        "key",
-        "caption"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "key": {
-          "type": "string",
-          "format": "uri"
-        },
-        "caption": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
-    },
     "expose": {
       "type": "object",
       "required": [
@@ -2978,10 +2960,6 @@
             },
             "services": {
               "$ref": "#/$defs/stringList"
-            },
-            "legacy": {
-              "type": "string",
-              "minLength": 1
             },
             "transform": {
               "type": "string",

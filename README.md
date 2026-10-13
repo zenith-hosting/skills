@@ -23,7 +23,7 @@ Select one skill with `--skill zenith-compose`, target an agent with `--agent co
 
 ## Maintain the Compose contract
 
-The Compose skill bundles exact copies of the public schema, the development restrictions, and the local environment policy from Zenith's `contract` folder. Preview validation uses both schemas and the CLI's semantic checks. The dev schema alone does not define the complete document.
+The Compose skill derives its developer schema from Zenith's `contract` folder using explicit allowlists for developer-facing Zenith fields. It bundles the development restrictions and local environment policy unchanged. Preview validation uses both schemas and the CLI's semantic checks. The dev schema alone does not define the complete document.
 
 Refresh the public files from a checkout containing the intended contract revision:
 
@@ -31,4 +31,4 @@ Refresh the public files from a checkout containing the intended contract revisi
 node scripts/sync-contract.mjs /path/to/zenith-checkout
 ```
 
-The helper copies only its three allowlisted files. It records the source Git commit and SHA-256 hashes in `skills/zenith-compose/references/contract-source.json`, and refuses modified source contract files. Review the resulting diff and keep the CLI's contract snapshots aligned with that revision. Edit the source contract rather than maintaining another specification in skill prose.
+The helper reads only its three allowlisted source files. It filters Zenith fields against the developer allowlists and removes unused schema definitions before writing the skill's schema. New required fields outside those allowlists stop the sync for review. It records the source Git commit and hashes of both source and distributed files in `skills/zenith-compose/references/contract-source.json`, and refuses modified source contract files. Review contract changes and the developer allowlists together. Keep the CLI's validation snapshots aligned with the source revision.
