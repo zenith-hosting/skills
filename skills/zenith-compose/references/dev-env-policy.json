@@ -1,0 +1,44 @@
+{
+  "namePattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+  "deniedNames": [
+    "PATH",
+    "NODE_OPTIONS",
+    "PYTHONPATH",
+    "PYTHONSTARTUP",
+    "PYTHONHOME",
+    "BASH_ENV",
+    "ENV",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "RUBYOPT",
+    "PERL5LIB",
+    "PERL5OPT"
+  ],
+  "deniedPrefixes": [
+    "LD_"
+  ],
+  "allowedNames": [
+    "LD_DB_PASSWORD",
+    "LD_SUPERUSER_PASSWORD"
+  ],
+  "builtinNames": [
+    "ZENITH_PUBLIC_URL",
+    "ZENITH_PUBLIC_HOST",
+    "ZENITH_PUBLIC_URLS",
+    "ZENITH_PUBLIC_HOSTS",
+    "ZENITH_PUBLIC_HOSTNAME",
+    "ZENITH_PUBLIC_HOSTNAMES",
+    "ZENITH_OWNER_EMAIL",
+    "ZENITH_SMTP_HOST",
+    "ZENITH_SMTP_PORT",
+    "ZENITH_SMTP_FROM",
+    "ZENITH_SMTP_USER",
+    "ZENITH_SMTP_DISPLAY",
+    "ZENITH_SMTP_PASS"
+  ],
+  "builtinPrefixes": [
+    "ZENITH_PUBLIC_URL_"
+  ],
+  "maxKeys": 64,
+  "maxBytes": 32768
+}
