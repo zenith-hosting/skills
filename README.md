@@ -1,25 +1,34 @@
 # Zenith skills
 
-Agent skills for publishing and maintaining apps on [Zenith](https://zenith.hosting).
+Agent skills for preparing, previewing, and publishing apps on [Zenith](https://zenith.hosting) with the [Zenith CLI](https://github.com/zenith-hosting/zenith-cli).
 
 ## Install
 
-Install the skill into the app repository, then ask your agent to use it:
+Install the collection in your app repository:
 
 ```sh
-npx skills add zenith-hosting/skills --skill create-zenith-compose
+npx skills add zenith-hosting/skills
 ```
 
-To target Codex explicitly, add `--agent codex`. A global installation is also supported with `--global`, but onboarding still adds a committed project-local loader for other contributors and future agents.
+Select one skill with `--skill zenith-compose`, target an agent with `--agent codex`, or install globally with `--global`. The CLI's `zenith skills install` command installs the four skills from this repository.
 
-Installing downloads the skill; it does not commit files or open PRs. The first authorized skill run includes the permanent loader, agent-discovery pointers, and project deployment guidance in the onboarding PR. Do not leave those files as unexplained uncommitted installer output.
+| Skill | Use it to |
+| --- | --- |
+| [zenith-setup](skills/zenith-setup/SKILL.md) | Install the CLI, sign in, and initialise an app repository. |
+| [zenith-compose](skills/zenith-compose/SKILL.md) | Adapt the Dockerfile and Compose manifest using the shared contract. |
+| [zenith-test](skills/zenith-test/SKILL.md) | Check the project and exercise a live preview. |
+| [zenith-publish](skills/zenith-publish/SKILL.md) | Submit a public GitHub commit and follow review feedback. |
 
-## Create and maintain Zenith Compose
+`zenith-compose` replaces `create-zenith-compose`. Published source builds use the pinned GitHub commit; a separately published registry image is optional. A submission enters review before it becomes a live catalogue listing.
 
-`create-zenith-compose` prepares a public GitHub repository for Zenith. If needed, it opens a container-publishing PR, follows the resulting CI run after the owner merges, then opens the pinned `zenith-compose.yml` PR. Existing manifests select maintenance mode rather than being assumed current.
+## Maintain the Compose contract
 
-Local Docker and an installed GitHub CLI are optional. The agent uses an available authenticated GitHub tool and Git transport; required builds and runtime checks run in CI. Production images target `linux/amd64`. ARM local testing is a separate developer setup concern.
+The Compose skill derives its developer schema from Zenith's `contract` folder using explicit allowlists for developer-facing Zenith fields. It bundles the development restrictions and local environment policy unchanged. Preview validation uses both schemas and the CLI's semantic checks. The dev schema alone does not define the complete document.
 
-The committed `.agents/skills/create-zenith-compose/SKILL.md` is a small pointer to the current upstream skill and specification. Project agent instructions direct future agents to consult it for deployment-affecting changes. Remote changes take effect when an agent next reads the loader, not continuously or as an automatic deployment. CI checks and reviewed digest updates complement agent guidance.
+Refresh the public files from a checkout containing the intended contract revision:
 
-Owners retain control of merges, any confirmed package-visibility change, and Zenith submission/release. Publishing a new image does not automatically update a pinned manifest or running customers.
+```sh
+node scripts/sync-contract.mjs /path/to/zenith-checkout
+```
+
+The helper reads only its three allowlisted source files. It filters Zenith fields against the developer allowlists and removes unused schema definitions before writing the skill's schema. New required fields outside those allowlists stop the sync for review. It records the source Git commit and hashes of both source and distributed files in `skills/zenith-compose/references/contract-source.json`, and refuses modified source contract files. Review contract changes and the developer allowlists together. Keep the CLI's validation snapshots aligned with the source revision.

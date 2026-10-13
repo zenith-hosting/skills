@@ -1,4 +1,0 @@
-interface:
-  display_name: "Create Zenith Compose"
-  short_description: "Open the PRs needed to publish on Zenith"
-  default_prompt: "Use $create-zenith-compose to prepare this public GitHub repository for Zenith and open the required pull requests."

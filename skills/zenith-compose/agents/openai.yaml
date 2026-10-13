@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zenith Compose"
+  short_description: "Prepare Compose files for Zenith previews and publishing"
+  default_prompt: "Use $zenith-compose to adapt this app's Dockerfile and zenith-compose.yml using the bundled public contract."
