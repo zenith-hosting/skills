@@ -2,6 +2,8 @@
 
 Agent skills for preparing, previewing, and publishing apps on [Zenith](https://zenith.hosting) with the [Zenith CLI](https://github.com/zenith-hosting/zenith-cli).
 
+Zenith includes outbound app email through its managed SMTP relay. The Compose skill shows how to configure it for previews and published apps without a separate email-provider account.
+
 ## Install
 
 Install the collection in your app repository:
@@ -23,7 +25,7 @@ Select one skill with `--skill zenith-compose`, target an agent with `--agent co
 
 ## Maintain the Compose contract
 
-The Compose skill derives its developer schema from Zenith's `contract` folder using explicit allowlists for developer-facing Zenith fields. It bundles the development restrictions and local environment policy unchanged. Preview validation uses both schemas and the CLI's semantic checks. The dev schema alone does not define the complete document.
+The Compose skill derives its developer schema from Zenith's `contract` folder using explicit allowlists for developer-facing Zenith fields. It bundles the source-build requirements and local environment policy unchanged. Preview validation uses both schemas and the CLI's semantic checks. The dev schema alone does not define the complete document.
 
 Refresh the public files from a checkout containing the intended contract revision:
 
