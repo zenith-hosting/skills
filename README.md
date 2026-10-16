@@ -23,6 +23,16 @@ Separately, `zenith init` adds the four skill files bundled with the installed C
 
 `zenith-compose` replaces `create-zenith-compose`. Published source builds use the pinned GitHub commit; a separately published registry image is optional. A submission enters review before it becomes a live catalogue listing.
 
+## Automatic refresh on use
+
+Each skill starts with an agent-run refresh step. Once per session and installed path, the agent checks and updates that skill with the Skills CLI, then re-reads the installed instructions and references. There is no background updater or scheduler.
+
+The instructions use named updates with an explicit project/global scope, preserve version pins and local customizations, and avoid unrelated skills. Untracked copies and missing references use a complete, explicitly targeted reinstall. Failed or skipped checks are reported as unverified freshness, not success. The agent keeps a recovery copy before replacement.
+
+Old installations cannot acquire this behavior until updated once. Install this collection again with your existing scope and agent after this change is merged; CLI-bundled copies still need that initial refresh. A pinned or intentionally customized installation is not silently moved to the latest release. Updating skills does not grant permission to deploy or publish an app.
+
+Command syntax was checked against [Skills CLI](https://github.com/vercel-labs/skills#skills-update) `1.7.2`.
+
 ## Sources of truth
 
 Read the [live docs index](https://docs.zenith.hosting/llms.txt) and relevant guides before acting. The docs and [CLI implementation](https://github.com/zenith-hosting/zenith-cli) are authoritative, not these skills or the CLI's bundled skill copies. The docs define public runtime support; local CLI checks do not prove server support.

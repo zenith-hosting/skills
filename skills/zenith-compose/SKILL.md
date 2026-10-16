@@ -5,6 +5,24 @@ description: Create or adapt Dockerfile and zenith-compose.yml files using the l
 
 # Zenith Compose
 
+## Refresh this skill first
+
+Before following this workflow, automatically check for and apply updates to this installed skill once per agent session and installation path. Record the attempt before running it so reloading the skill does not loop. Do not run this step while developing the upstream skills repository or an intentional local fork.
+
+Confirm the installation source is `zenith-hosting/skills` and identify its project/global scope from the installed path and skills lock file. Respect explicit version pins and update opt-outs. Preserve local edits, including committed customizations and extra files: the installer can overwrite the whole skill directory. Compare against the recorded upstream revision, not just Git working-tree status. If provenance or customization status is unclear, report it instead of overwriting. Before replacement, save the existing skill directory and relevant lock file outside the install directory so a partial failure can be recovered.
+
+For an unmodified, tracked project installation, run from the project root:
+
+```bash
+npx --yes skills@latest update zenith-compose --project --yes </dev/null
+```
+
+For a global installation, replace `--project` with `--global`. Never run an unfiltered update or update unrelated skills. The updater may target detected agents; inspect the installation targets first. For copy-mode installs or exact agent targeting, use `add` with the existing agent, scope, and `--copy` where applicable instead.
+
+For an untracked copy (including a pristine CLI-bundled copy) or missing references, install the complete directory from `zenith-hosting/skills` with `npx --yes skills@latest add zenith-hosting/skills --skill zenith-compose --agent <existing-agent> --yes`, adding `--global` only for a global install and `--copy` if the existing installation uses copies. Replace the agent placeholder; do not use `--all`. Preserve customizations before replacement. A missing lock entry or a skipped check is not proof that the skill is current.
+
+After an update, re-read this `SKILL.md` and any references needed for the task before continuing. On network, tool, or permission failure, do not retry in a loop: report that freshness is unverified, retain the installed files, and use the live docs below. Do not claim a successful refresh from exit status alone; check for skipped/failed updates and verify the installed files. Updating instructions does not authorize deployment, submission, committing, or pushing.
+
 ## Read the current contract
 
 Before editing or approving a manifest, read the [documentation index](https://docs.zenith.hosting/llms.txt), [Compose guide](https://docs.zenith.hosting/content/zenith-compose.md), and complete [Compose reference](https://docs.zenith.hosting/content/zenith-compose-reference.md). Before changing or verifying an image, also read the [container guide](https://docs.zenith.hosting/content/containerise.md).
