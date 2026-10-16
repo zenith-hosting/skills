@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "c024a30f085fed94f028406f500afc9353de5e31",
+  "sourceCommit": "3e4337d4fb92c54fdec450e7ce544a0f583b9e22",
   "files": {
     "zenith-compose.schema.json": {
       "sourcePath": "contract/zenith-compose.schema.json",
@@ -8,8 +8,8 @@
     },
     "zenith-dev-compose.schema.json": {
       "sourcePath": "contract/zenith-dev-compose.schema.json",
-      "sourceSha256": "3dddfc3d22e0ee966aa3a5a3d5ce4cd1ae12ebf57ca0d0491bda35a7d8932052",
-      "sha256": "3dddfc3d22e0ee966aa3a5a3d5ce4cd1ae12ebf57ca0d0491bda35a7d8932052"
+      "sourceSha256": "96f6a1c0dc559de7e189ebcdfd55a1d2e495446d8399d5425bdb3b3015b6a7cf",
+      "sha256": "96f6a1c0dc559de7e189ebcdfd55a1d2e495446d8399d5425bdb3b3015b6a7cf"
     },
     "dev-env-policy.json": {
       "sourcePath": "contract/dev-env-policy.json",
