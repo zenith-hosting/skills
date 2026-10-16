@@ -2298,7 +2298,7 @@
                   "number",
                   "string"
                 ],
-                "description": "File permission mode inside the container, in octal. Default is 0444 for configs and 0400 for secrets."
+                "description": "File permission mode inside the container, in octal. Zenith config mounts default to the Kubernetes ConfigMap mode, 0644. Quote octal values if your YAML tooling would otherwise convert them. See the live documentation for secret mount behavior."
               }
             },
             "additionalProperties": false,
@@ -2544,7 +2544,7 @@
                         "service_healthy",
                         "service_completed_successfully"
                       ],
-                      "description": "Condition to wait for. 'service_started' waits until the service has started, 'service_healthy' waits until the service is healthy (as defined by its healthcheck), 'service_completed_successfully' waits until the service has completed successfully."
+                      "description": "In Zenith, only service_healthy waits for the dependency's readiness signal. service_started and service_completed_successfully do not create runtime ordering."
                     }
                   },
                   "required": [
@@ -2554,7 +2554,7 @@
               }
             }
           ],
-          "description": "Express dependency between services. Service dependencies cause services to be started in dependency order. The dependent service will wait for the dependency to be ready before starting."
+          "description": "Express dependencies between services. In Zenith, only long-form condition: service_healthy creates a wait for readiness. Short-form dependencies, service_started, and service_completed_successfully do not create runtime ordering."
         },
         "healthcheck": {
           "$ref": "#/$defs/healthcheck",
@@ -2961,6 +2961,10 @@
             "services": {
               "$ref": "#/$defs/stringList"
             },
+            "legacy": {
+              "type": "string",
+              "minLength": 1
+            },
             "transform": {
               "type": "string",
               "enum": [
@@ -3019,5 +3023,6 @@
   "required": [
     "services",
     "x-zenith"
-  ]
+  ],
+  "$comment": "Structural validation aid only, not a guarantee of Zenith runtime support or acceptance. Live documentation is authoritative: https://docs.zenith.hosting/content/zenith-compose.md and https://docs.zenith.hosting/content/zenith-compose-reference.md. Run the documented CLI checks as well."
 }

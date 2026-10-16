@@ -1,18 +1,19 @@
 {
-  "sourceCommit": "c024a30f085fed94f028406f500afc9353de5e31",
+  "sourceRepository": "https://github.com/zenith-hosting/zenith-cli",
+  "sourceCommit": "7c5b90b2b0ff76e832a8113f86ccfc1bf5dc0277",
   "files": {
     "zenith-compose.schema.json": {
-      "sourcePath": "contract/zenith-compose.schema.json",
+      "sourcePath": "src/lint/compose.schema.json",
       "sourceSha256": "c35f5ea63176e709f04949587812e35395c28df692822cd30a379d09fc787a61",
-      "sha256": "48e6e87fcd7212c9d6d584ba4b29ec0485e1d8dce9ffcdf97bf47a84edf39a29"
+      "sha256": "d40c75bf69da86262a5326ccb1849fbe54fa76bf17e5b3e877f7eb4236acdb66"
     },
     "zenith-dev-compose.schema.json": {
-      "sourcePath": "contract/zenith-dev-compose.schema.json",
-      "sourceSha256": "3dddfc3d22e0ee966aa3a5a3d5ce4cd1ae12ebf57ca0d0491bda35a7d8932052",
-      "sha256": "3dddfc3d22e0ee966aa3a5a3d5ce4cd1ae12ebf57ca0d0491bda35a7d8932052"
+      "sourcePath": "src/lint/dev-compose.schema.json",
+      "sourceSha256": "96f6a1c0dc559de7e189ebcdfd55a1d2e495446d8399d5425bdb3b3015b6a7cf",
+      "sha256": "b0b0fd8310f21f6f6ad8a49354c29f534330565330c0e8dff58d4cf67d300eb1"
     },
     "dev-env-policy.json": {
-      "sourcePath": "contract/dev-env-policy.json",
+      "sourcePath": "src/lint/dev-env-policy.json",
       "sourceSha256": "9ffd5eca48568940c57bd98ea2289f05cf0323864cbfe227f4a5ee671a5e6da1",
       "sha256": "9ffd5eca48568940c57bd98ea2289f05cf0323864cbfe227f4a5ee671a5e6da1"
     }

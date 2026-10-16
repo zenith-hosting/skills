@@ -1,4 +1,4 @@
 interface:
   display_name: "Zenith Compose"
   short_description: "Prepare Compose files for Zenith previews and publishing"
-  default_prompt: "Use $zenith-compose to adapt this app's Dockerfile and zenith-compose.yml using the bundled public contract."
+  default_prompt: "Use $zenith-compose to adapt this app's Dockerfile and zenith-compose.yml. Read the live Zenith docs first, check the installed CLI, and report conflicts instead of treating bundled schemas as runtime authority."

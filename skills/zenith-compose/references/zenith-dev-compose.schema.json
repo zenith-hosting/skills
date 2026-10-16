@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://zenith.hosting/contracts/zenith-dev-compose.schema.json",
-  "title": "Zenith ephemeral development project restrictions",
+  "title": "Zenith development source build contract",
   "type": "object",
   "required": [
     "services",
@@ -14,82 +14,35 @@
     "services": {
       "type": "object",
       "minProperties": 1,
-      "maxProperties": 5,
       "additionalProperties": {
         "type": "object",
         "oneOf": [
-          { "required": ["build"] },
-          { "required": ["image"] }
-        ],
-        "properties": {
-          "image": { "type": "string", "minLength": 1 },
-          "depends_on": {},
-          "volumes": {
-            "type": "array",
-            "items": { "type": "string", "pattern": "^[a-zA-Z0-9_.-]+:/[^:]+$" }
-          },
-          "command": {},
-          "entrypoint": {},
-          "ports": {},
-          "expose": {},
-          "healthcheck": {
-            "type": "object",
-            "properties": {
-              "test": {
-                "oneOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "array",
-                    "prefixItems": [
-                      {
-                        "enum": [
-                          "CMD",
-                          "CMD-SHELL",
-                          "NONE"
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          },
-          "working_dir": {},
-          "configs": {
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "target": {
-                      "anyOf": [
-                        {
-                          "const": ""
-                        },
-                        {
-                          "type": "string",
-                          "pattern": "^/.*[^/]$"
-                        }
-                      ]
-                    },
-                    "uid": {
-                      "const": ""
-                    },
-                    "gid": {
-                      "const": ""
-                    }
-                  }
-                }
+          {
+            "required": [
+              "build"
+            ],
+            "not": {
+              "required": [
+                "image"
               ]
             }
           },
-          "secrets": {},
+          {
+            "required": [
+              "image"
+            ],
+            "not": {
+              "required": [
+                "build"
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "image": {
+            "type": "string",
+            "minLength": 1
+          },
           "build": {
             "oneOf": [
               {
@@ -111,43 +64,7 @@
                 "additionalProperties": false
               }
             ]
-          },
-          "restart": {
-            "const": "always"
-          },
-          "user": {
-            "type": "string",
-            "pattern": "^[0-9]+(:[0-9]+)?$"
-          },
-          "environment": {
-            "oneOf": [
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "type": [
-                    "string",
-                    "number",
-                    "boolean"
-                  ]
-                }
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "pattern": "="
-                }
-              }
-            ]
           }
-        },
-        "additionalProperties": false
-      },
-      "propertyNames": {
-        "pattern": "^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$",
-        "maxLength": 50,
-        "not": {
-          "pattern": "^zenith[-_]ready[-_]"
         }
       }
     },
@@ -157,7 +74,6 @@
         "expose"
       ],
       "properties": {
-        "catalog": {},
         "expose": {
           "type": "array",
           "contains": {
@@ -173,68 +89,10 @@
                 "const": ""
               }
             }
-          },
-          "items": {
-            "type": "object",
-            "properties": {
-              "label": {
-                "type": "string",
-                "maxLength": 18,
-                "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$"
-              }
-            }
           }
         }
-      },
-      "additionalProperties": false
-    },
-    "configs": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": [
-          "content"
-        ],
-        "properties": {
-          "content": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      }
-    },
-    "secrets": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "required": [
-          "content"
-        ],
-        "properties": {
-          "content": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "propertyNames": {
-        "pattern": "^[a-z0-9_-]*[a-z0-9]$",
-        "maxLength": 61
-      }
-    },
-    "volumes": {
-      "type": "object",
-      "additionalProperties": {
-        "type": ["object", "null"],
-        "maxProperties": 0
       }
     }
   },
-  "additionalProperties": false
+  "$comment": "Structural validation aid only, not a guarantee of Zenith runtime support or acceptance. Live documentation is authoritative: https://docs.zenith.hosting/content/zenith-compose.md and https://docs.zenith.hosting/content/zenith-compose-reference.md. Run the documented CLI checks as well."
 }
