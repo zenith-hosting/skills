@@ -18,6 +18,7 @@ Separately, `zenith init` adds the four skill files bundled with the installed C
 | --- | --- |
 | [zenith-setup](skills/zenith-setup/SKILL.md) | Install the CLI, sign in, and initialise an app repository. |
 | [zenith-compose](skills/zenith-compose/SKILL.md) | Adapt the Dockerfile and Compose manifest using the shared contract. |
+| [zenith-integrations](skills/zenith-integrations/SKILL.md) | Wire an app to category APIs using live capabilities and scoped tokens. |
 | [zenith-test](skills/zenith-test/SKILL.md) | Check the project and exercise a live preview. |
 | [zenith-publish](skills/zenith-publish/SKILL.md) | Submit a public GitHub commit and follow review feedback. |
 
